@@ -54,14 +54,14 @@ npm install
 Create a `.env` file in the root directory:
 
 ```env
-SPRING_SERVER_BASE_URL=http://localhost:8080
-API_BASE_URL=http://localhost:8080/api/v1
-YJS_SERVER_URL=ws://localhost:1234
+REACT_APP_SPRING_SERVER_BASE_URL=http://localhost:8080
+REACT_APP_API_BASE_URL=http://localhost:8080/api/v1
+REACT_APP_YJS_SERVER_URL=ws://localhost:1234
 ```
 
-- `SPRING_SERVER_BASE_URL`: Spring Boot backend host.
-- `API_BASE_URL`: Spring Boot backend API URL.
-- `YJS_SERVER_URL`: Yjs WebSocket server URL.
+- `REACT_APP_SPRING_SERVER_BASE_URL`: Spring Boot backend host.
+- `REACT_APP_API_BASE_URL`: Spring Boot backend API URL.
+- `REACT_APP_YJS_SERVER_URL`: Yjs WebSocket server URL.
 
 ### 4. Run the Backend and Yjs Server
 
