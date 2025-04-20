@@ -1,70 +1,135 @@
-# Getting Started with Create React App
+# CodeSpace Editor Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+CodeSpace Editor Frontend is a React.js application that provides a collaborative code editing interface for the CodeSpace Editor platform. It integrates with a [Spring Boot Backend](https://github.com/mahmoud0alabsi/code_space_editor) for project, branch, and commit management, and a [Yjs Server](https://github.com/mahmoud0alabsi/code_space_editor_yjs_server) for real-time document collaboration using Monaco Editor.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- **Workspace (Dashboard)**: Create, view, and manage projects.
+- **Branch Management**: Fork branches and manage commits.
+- **Real-Time Collaboration**: Edit code collaboratively with Yjs and Monaco Editor.
+- **Code Editing**: Syntax highlighting and IntelliSense via Monaco Editor.
+- **Authentication**: Secure JWT-based login and registration.
+- **Responsive Design**: Optimized for desktop and mobile devices.
 
-### `npm start`
+## Why Yjs?
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Yjs powers real-time collaboration using **Conflict-free Replicated Data Types (CRDT)**:
+- **Conflict-Free Edits**: Automatically resolves concurrent edits, ensuring document consistency.
+- **Low Latency**: Sends incremental updates via WebSocket for fast synchronization.
+- **Monaco Integration**: Enables live cursor tracking and text edits in `/collaborative-editor`.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Tech Stack
 
-### `npm test`
+- **Frontend**: React.js
+- **State Management**: Redux Toolkit
+- **API Client**: Axios
+- **Code Editor**: Monaco Editor
+- **Collaboration**: Yjs with WebSocket (`y-websocket`)
+- **Package Manager**: npm
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Prerequisites
 
-### `npm run build`
+- Node.js 18+
+- npm 9+
+- [CodeSpace Editor Backend](https://github.com/mahmoud0alabsi/code_space_editor) running
+- [CodeSpace Editor Yjs Server](https://github.com/mahmoud0alabsi/code_space_editor_yjs_server) running
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Setup Instructions
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 1. Clone the Repository
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+git clone https://github.com/mahmoud0alabsi/code_space_editor_react.git
+cd codespace-editor-frontend
+```
 
-### `npm run eject`
+### 2. Install Dependencies
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```bash
+npm install
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 3. Configure Environment
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Create a `.env` file in the root directory:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```env
+SPRING_SERVER_BASE_URL=http://localhost:8080
+API_BASE_URL=http://localhost:8080/api/v1
+YJS_SERVER_URL=ws://localhost:1234
+```
 
-## Learn More
+- `SPRING_SERVER_BASE_URL`: Spring Boot backend host.
+- `API_BASE_URL`: Spring Boot backend API URL.
+- `YJS_SERVER_URL`: Yjs WebSocket server URL.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### 4. Run the Backend and Yjs Server
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- **Backend**: Follow the [backend README](https://github.com/mahmoud0alabsi/code_space_editor) to start the Spring Boot server.
+- **Yjs Server**: Follow the [Yjs server README](https://github.com/mahmoud0alabsi/code_space_editor_yjs_server) to start the WebSocket server (`node server.js`).
 
-### Code Splitting
+### 5. Run the Application
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```bash
+npm run dev
+```
 
-### Analyzing the Bundle Size
+- The app runs on `http://localhost:3000`.
+- Open in a browser to access.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### 6. Build for Production
 
-### Making a Progressive Web App
+```bash
+npm run build
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+- Output is in the `dist` folder.
+- Serve with `npm run preview` or a static server.
 
-### Advanced Configuration
+## Navigation
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- `/`: Home page.
+- `/login`: Login page (also contains OAuth2 (Google and Github)).
+- `/register`: User registration.
+- `/workspace`: Dashboard for managing projects.
+- `/collaborative-editor`: Real-time code editing with Monaco Editor and Yjs.
 
-### Deployment
+## API Integration
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+The frontend interacts with the Spring Boot backend via RESTful APIs:
 
-### `npm run build` fails to minify
+- `POST /api/v1/auth/login`: Authenticate and receive a JWT token.
+- `POST /api/v1/auth/register`: Register a new user.
+- `POST /api/v1/projects`: Create a project.
+- `POST /api/v1/branches/p/{projectId}/b/{branchId}/fork`: Fork a branch.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+The Yjs server (`YJS_SERVER_URL`) handles real-time collaboration via WebSocket.
+
+## Project Structure
+
+```
+public/
+├── assets/                # Images, icons
+src/
+├── api/                   # api handlers
+├── components/            # Reusable React components
+├── hooks/                 # Editor and chat hooks
+├── pages/                 # Page components (Home, Login, Workspace, CollaborativeEditor)
+├── state_managment/       # Redux Toolkit slices and store
+├── services/              # Sessions sync
+├── routes/                # App routes
+├── App.jsx                # Main app with routing
+├── index.jsx              # Entry point
+```
+
+## Contributing
+
+1. Fork the repository.
+2. Create a feature branch (`git checkout -b feature/your-feature`).
+3. Commit changes (`git commit -m "Add your feature"`).
+4. Push to the branch (`git push origin feature/your-feature`).
+5. Open a pull request.
+
+## Contact
+
+For issues or questions, open a GitHub issue or contact malabsi034@gmail.com.

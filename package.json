@@ -3,14 +3,46 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@fontsource/inter": "^5.2.5",
+    "@monaco-editor/react": "^4.7.0",
+    "@mui/icons-material": "^7.0.2",
+    "@mui/material": "^7.0.2",
+    "@mui/x-data-grid": "^7.28.3",
+    "@mui/x-date-pickers": "^7.28.3",
+    "@mui/x-tree-view": "^7.28.1",
+    "@react-spring/web": "^9.7.5",
+    "@reduxjs/toolkit": "^2.6.1",
+    "@stomp/stompjs": "^7.1.1",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.8.4",
+    "clsx": "^2.1.1",
+    "code-space-editor-fe": "file:",
+    "dayjs": "^1.11.13",
+    "diff": "^7.0.0",
+    "jwt-decode": "^4.0.0",
+    "monaco-editor": "^0.52.2",
+    "primereact": "^10.9.4",
     "react": "^19.1.0",
+    "react-diff-viewer-continued": "^3.4.0",
     "react-dom": "^19.1.0",
+    "react-icons": "^5.5.0",
+    "react-monaco-editor": "^0.58.0",
+    "react-redux": "^9.2.0",
+    "react-resizable-panels": "^2.1.7",
+    "react-router-dom": "^7.5.0",
     "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "redux-thunk": "^3.1.0",
+    "sockjs-client": "^1.6.1",
+    "three": "^0.175.0",
+    "web-vitals": "^2.1.4",
+    "y-monaco": "github:yjs/y-monaco",
+    "y-websocket": "^3.0.0",
+    "yjs": "^13.6.24"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -35,5 +67,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^3.4.17"
   }
 }
