@@ -17,24 +17,24 @@ const items = [
     title: "Real-Time Collaboration",
     description:
       "Work with your team on the same codebase in real time, with instant syncing across sessions.",
-    imageLight: "/assets/features/realtime-light.png",
-    imageDark: "/assets/features/realtime-dark.png",
+    imageLight: "/assets/collaborate.png",
+    imageDark: "/assets/collaborate.png",
   },
   {
     icon: <MergeTypeRoundedIcon fontSize="large" color="primary" />,
     title: "Branch & File Management",
     description:
       "Navigate branches and files easily. Switch between sessions by simply selecting a file.",
-    imageLight: "/assets/features/branches-light.png",
-    imageDark: "/assets/features/branches-dark.png",
+    imageLight: "/assets/branchs.png",
+    imageDark: "/assets/branchs.png",
   },
   {
     icon: <HistoryEduRoundedIcon fontSize="large" color="primary" />,
     title: "Version Control & Commits",
     description:
       "Track every change. Commit with context. Review history and stay in control of your project.",
-    imageLight: "/assets/features/history-light.png",
-    imageDark: "/assets/features/history-dark.png",
+    imageLight: "/assets/commits.png",
+    imageDark: "/assets/commits.png",
   },
 ];
 
@@ -85,6 +85,8 @@ function MobileLayout({ selectedItemIndex, handleItemClick, selectedFeature }) {
             ...theme.applyStyles?.("dark", {
               backgroundImage: "var(--items-imageDark)",
             }),
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
           })}
           style={{
             "--items-imageLight": `url(${selectedFeature.imageLight})`,
@@ -224,9 +226,12 @@ export default function Features() {
             <Box
               sx={(theme) => ({
                 m: "auto",
-                width: 420,
+                width: "100%",
                 height: 500,
+                borderRadius: 1,
                 backgroundSize: "contain",
+                backgroundSize: "cover",
+                backgroundRepeat: "no-repeat",
                 backgroundImage: "var(--items-imageLight)",
                 ...theme.applyStyles("dark", {
                   backgroundImage: "var(--items-imageDark)",
@@ -235,9 +240,9 @@ export default function Features() {
               style={
                 items[selectedItemIndex]
                   ? ({
-                      "--items-imageLight": items[selectedItemIndex].imageLight,
-                      "--items-imageDark": items[selectedItemIndex].imageDark,
-                    })
+                    "--items-imageLight": `url(${items[selectedItemIndex].imageLight})`,
+                    "--items-imageDark": `url(${items[selectedItemIndex].imageDark})`,
+                  })
                   : {}
               }
             />

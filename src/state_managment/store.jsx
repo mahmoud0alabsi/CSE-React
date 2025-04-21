@@ -1,5 +1,4 @@
 import { configureStore, createSlice } from '@reduxjs/toolkit';
-import { thunk } from 'redux-thunk';
 import collaborativeReducer from './collaborativeSlice';
 
 const uiSlice = createSlice({
@@ -24,6 +23,5 @@ export const store = configureStore({
     ui: uiSlice.reducer,
     collaborative: collaborativeReducer,
   },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(thunk),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });
