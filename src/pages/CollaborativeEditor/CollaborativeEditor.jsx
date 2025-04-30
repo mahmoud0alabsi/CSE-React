@@ -40,6 +40,7 @@ export default function CollaborativeEditorPage(props) {
           projectName={projectName}
           updatedAt={updatedAt}
           code={code}
+          role={role}
         />
 
         {/* PanelsSplitter fills remaining height */}

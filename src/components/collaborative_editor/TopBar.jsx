@@ -5,7 +5,7 @@ import { showLoading } from '../../state_managment/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import CommitModal from './CommitModal';
-import { updateSelectedFileContent, addBranch, setSelectedBranchId, setSelectedFile } from '../../state_managment/collaborativeSlice';
+import { updateSelectedFileContent, addBranch } from '../../state_managment/collaborativeSlice';
 import ForkBranchDialog from './ForkBranchDialog';
 import MergeBranchDialog from './MergeBranchDialog';
 import { handleForkBranch } from '../../api/branch/handlers';
@@ -14,7 +14,7 @@ import { sendBranchMessage } from '../../services/sessionSyncService';
 export default function TopBar({
   projectName = 'Untitled Project',
   updatedAt = 'Unknown',
-  code = '',
+  role = 'VIEWER',
 }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -32,14 +32,18 @@ export default function TopBar({
   };
 
   const handleCommitBtn = () => {
-    dispatch(updateSelectedFileContent({ code }));
-    setCommitModalOpen(true);
+    dispatch(updateSelectedFileContent());
+    setTimeout(() => {
+      setCommitModalOpen(true);
+    }, 500);
   }
 
   const handleForkSelectedBranch = async ({ baseBranchId, forkedBranchName }) => {
     try {
       const response = await handleForkBranch(projectId, baseBranchId, forkedBranchName);
       if (response.success) {
+        setSnackbarMessage(`Forked branch '${forkedBranchName}' successfully!`);
+        setOpenSnackbar(true);
         const newBranch = {
           id: response.data.id,
           name: forkedBranchName,
@@ -49,17 +53,11 @@ export default function TopBar({
           status: 'new',
         };
         dispatch(addBranch(newBranch));
-        setForkDialogOpen(false);
-        setSnackbarMessage(`Forked branch '${forkedBranchName}' successfully!`);
-
-        // dispatch(setSelectedBranchId(response.data.id));
-        // dispatch(setSelectedFile(null));
         sendBranchMessage(projectId, newBranch);
-
-        setOpenSnackbar(true);
+        setForkDialogOpen(false);
         setTimeout(() => {
           setOpenSnackbar(false);
-        }, 4000);
+        }, 3000);
       } else {
         console.error('Fork failed:', response.message);
       }
@@ -120,7 +118,7 @@ export default function TopBar({
           size="small"
           sx={{ textTransform: 'none' }}
           onClick={() => handleCommitBtn()}
-          disabled={!selectedBranchId}
+          disabled={!selectedBranchId || role === 'VIEWER'}
         >
           Commit
         </Button>
@@ -129,7 +127,7 @@ export default function TopBar({
           size="small"
           sx={{ textTransform: 'none' }}
           onClick={() => setForkDialogOpen(true)}
-          disabled={!projectId}
+          disabled={!projectId || role === 'VIEWER'}
         >
           Fork
         </Button>
@@ -138,7 +136,7 @@ export default function TopBar({
           size="small"
           sx={{ textTransform: 'none' }}
           onClick={() => setMergeDialogOpen(true)}
-          disabled={!projectId}
+          disabled={!projectId || role === 'VIEWER'}
         >
           Merge
         </Button>

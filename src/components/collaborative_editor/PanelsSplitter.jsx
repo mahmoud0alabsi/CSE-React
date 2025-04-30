@@ -9,6 +9,7 @@ import SideMenu from './SideMenu';
 import EditorTabs from './EditorTabs';
 import CodeEditor from './CodeEditor';
 import CodeExecution from './CodeExecution';
+import { useRef } from 'react';
 
 export default function PanelsSplitter({ onCodeChange }) {
     const [code, setCode] = useState('');
@@ -17,12 +18,21 @@ export default function PanelsSplitter({ onCodeChange }) {
         center: 60,
         right: 22,
     };
-    const [sizes, setSizes] = useState(defaultSizes);
-    const [key, setKey] = useState(0);
+    const horizontalPanelGroupRef = useRef();
+    const verticalPanelGroupRef = useRef();
 
     const resetPanels = () => {
-        setSizes(defaultSizes);
-        setKey(prev => prev + 1);
+        if (horizontalPanelGroupRef.current) {
+            horizontalPanelGroupRef.current.setLayout([
+                defaultSizes.left,
+                defaultSizes.center,
+                defaultSizes.right
+            ]);
+        }
+
+        if (verticalPanelGroupRef.current) {
+            verticalPanelGroupRef.current.setLayout([90, 10]);
+        }
     };
 
     const handleSetCode = (newCode) => {
@@ -34,9 +44,9 @@ export default function PanelsSplitter({ onCodeChange }) {
         <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             {/* Scrollable main panel area */}
             <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
-                <PanelGroup key={key} direction="horizontal" style={{ height: '100%' }}>
+                <PanelGroup ref={horizontalPanelGroupRef} direction="horizontal" style={{ height: '100%' }}>
                     {/* Left: Side Menu */}
-                    <Panel defaultSize={sizes.left} minSize={15} maxSize={18}>
+                    <Panel defaultSize={defaultSizes.left} minSize={15} maxSize={18}>
                         <Box sx={{ height: '100%' }}>
                             <SideMenu code={code} />
                         </Box>
@@ -45,8 +55,8 @@ export default function PanelsSplitter({ onCodeChange }) {
                     <CustomResizeHandle />
 
                     {/* Middle: Monaco Editor */}
-                    <Panel defaultSize={sizes.center} minSize={20}>
-                        <PanelGroup key={key} direction="vertical" style={{ height: '100%', width: '100%' }}>
+                    <Panel defaultSize={defaultSizes.center} minSize={20}>
+                        <PanelGroup ref={verticalPanelGroupRef} direction="vertical" style={{ height: '100%', width: '100%' }}>
                             {/* Top: Code Editor */}
                             <Panel defaultSize={90} minSize={10} maxSize={90}>
                                 <Box sx={{ height: '100%' }}>
@@ -68,7 +78,7 @@ export default function PanelsSplitter({ onCodeChange }) {
                     <CustomResizeHandle />
 
                     {/* Right: Tab Panel */}
-                    <Panel defaultSize={sizes.right} minSize={15}>
+                    <Panel defaultSize={defaultSizes.right} minSize={15}>
                         <Box
                             sx={{
                                 height: '100%',

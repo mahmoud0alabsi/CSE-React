@@ -9,7 +9,6 @@ import Stack from '@mui/material/Stack';
 import Header from './Header';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-import CircularProgress from '@mui/material/CircularProgress';
 import Skeleton from '@mui/material/Skeleton';
 
 import { useEffect, useState } from 'react';
@@ -18,7 +17,8 @@ import { handleGetAllProjects, handleCreateProject, handleDeleteProject } from '
 
 export default function MainGrid() {
   const [loadingCreate, setLoadingCreate] = useState(false);
-  const [projects, setProjects] = useState([]);
+  const [ownerProjects, setOwnerProjects] = useState([]);
+  const [teamProjects, setTeamProjects] = useState([]);
   const [loadingProjects, setLoadingProjects] = useState(true);
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -27,20 +27,36 @@ export default function MainGrid() {
 
   useEffect(() => {
     const fetchProjects = async () => {
-      setLoadingProjects(true); // Start loading
-      const response = await handleGetAllProjects();
-      if (response.success) {
-        setProjects(response.data);
-      } else {
-        console.error(response.message);
+      setLoadingProjects(true);
+      try {
+        const response = await handleGetAllProjects();
+        if (response.success) {
+          const owner = [];
+          const team = [];
+
+          response.data.forEach((project) => {
+            if (project.role === 'OWNER') {
+              owner.push(project);
+            } else {
+              team.push(project);
+            }
+          });
+
+          setOwnerProjects(owner);
+          setTeamProjects(team);
+        } else {
+          console.error(response.message);
+        }
+
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoadingProjects(false);
       }
-      setLoadingProjects(false);
     };
 
     fetchProjects();
   }, []);
-
-
 
   const handleCreateNewProject = async (name, description) => {
     setLoadingCreate(true);
@@ -51,12 +67,12 @@ export default function MainGrid() {
         id: response.message.id,
         name: response.message.name,
         ownerName: response.message.ownerName,
-        description: response.message.description,
+        description: response.message.description || '',
         createdAt: response.message.createdAt,
         updatedAt: response.message.updatedAt,
         role: 'OWNER',
       };
-      setProjects((prevProjects) => [...prevProjects, newProject]);
+      setOwnerProjects((prevProjects) => [...prevProjects, newProject]);
 
       setSnackbarMessage('Project created successfully!');
       setSnackbarSeverity('success');
@@ -69,6 +85,7 @@ export default function MainGrid() {
     }
 
     setLoadingCreate(false);
+    return response;
   };
 
   const handleDeleteProj = async (projectId) => {
@@ -76,7 +93,7 @@ export default function MainGrid() {
     const response = await handleDeleteProject(projectId);
 
     if (response.success) {
-      setProjects((prevProjects) => prevProjects.filter((project) => project.id !== projectId));
+      setOwnerProjects((prevProjects) => prevProjects.filter((project) => project.id !== projectId));
       setSnackbarMessage('Project deleted successfully!');
       setSnackbarSeverity('success');
     } else {
@@ -89,6 +106,9 @@ export default function MainGrid() {
     setLoadingProjects(false);
   }
 
+  const handleSnackabrClose = () => {
+    setSnackbarOpen(false);
+  }
 
   return (
     <Stack
@@ -127,36 +147,51 @@ export default function MainGrid() {
             ))}
           </Grid>
         ) : (
-
-          <Grid
-            container
-            spacing={2}
-            sx={{
-              mb: (theme) => theme.spacing(2),
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-              gap: 2,
-              gridAutoRows: 'minmax(100px, auto)',
-              gridAutoFlow: 'dense',
-            }}
-          >
-            {projects
-              .filter((project) => project.role === 'OWNER')
-              .map((project, index) => (
-                <Grid item xs={12} sm={6} lg={3} key={index} sx={{ display: 'flex' }}>
-                  <ProjectCard
-                    projectId={project.id}
-                    name={project.name}
-                    ownerName={project.ownerName}
-                    role={project.role}
-                    description={project.description}
-                    createdAt={project.createdAt}
-                    updatedAt={project.updatedAt}
-                    onDeleteProject={handleDeleteProj}
-                  />
+          <>
+            {
+              ownerProjects.length === 0 ? (
+                <Typography variant="body2" color="text.secondary"
+                  sx={{
+                    mb: (theme) => theme.spacing(2),
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    display: 'flex',
+                    width: '100%',
+                  }}>
+                  No projects available.
+                </Typography>
+              ) : (
+                <Grid
+                  container
+                  spacing={2}
+                  sx={{
+                    mb: (theme) => theme.spacing(2),
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+                    gap: 2,
+                    gridAutoRows: 'minmax(100px, auto)',
+                    gridAutoFlow: 'dense',
+                  }}
+                >
+                  {ownerProjects
+                    .map((project, index) => (
+                      <Grid item xs={12} sm={6} lg={3} key={index} sx={{ display: 'flex' }}>
+                        <ProjectCard
+                          projectId={project.id}
+                          name={project.name}
+                          ownerName={project.ownerName}
+                          role={project.role}
+                          description={project.description}
+                          createdAt={project.createdAt}
+                          updatedAt={project.updatedAt}
+                          onDeleteProject={handleDeleteProj}
+                        />
+                      </Grid>
+                    ))}
                 </Grid>
-              ))}
-          </Grid>
+              )
+            }
+          </>
         )}
 
         <Typography component="h6" variant="subtitle1" sx={{ mb: 1 }}>
@@ -178,48 +213,64 @@ export default function MainGrid() {
           >
             {Array.from({ length: 6 }).map((_, index) => (
               <Grid item xs={12} sm={6} lg={3} key={index} sx={{ display: 'flex' }}>
-                <Skeleton animation="wave" ariant="rounded" width={350} height={180} />
+                <Skeleton animation="wave" variant="rounded" width={350} height={200} />
               </Grid>
             ))}
           </Grid>
         ) : (
-          <Grid
-            container
-            spacing={2}
-            sx={{
-              mb: (theme) => theme.spacing(2),
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-              gap: 2,
-              gridAutoRows: 'minmax(100px, auto)',
-              gridAutoFlow: 'dense',
-            }}
-          >
-            {projects
-              .filter((project) => project.role !== 'OWNER')
-              .map((project, index) => (
-                <Grid item xs={12} sm={6} lg={3} key={index} sx={{ display: 'flex' }}>
-                  <ProjectCard
-                    projectId={project.id}
-                    name={project.name}
-                    ownerName={project.ownerName}
-                    role={project.role}
-                    description={project.description}
-                    createdAt={project.createdAt}
-                    updatedAt={project.updatedAt}
-                    onDeleteProject={handleDeleteProj}
-                  />
+          <>
+            {
+              teamProjects.length === 0 ? (
+                <Typography variant="body2" color="text.secondary"
+                  sx={{
+                    mb: (theme) => theme.spacing(2),
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    display: 'flex',
+                    width: '100%',
+                  }}>
+                  No team projects available.
+                </Typography>
+              ) : (
+                <Grid
+                  container
+                  spacing={2}
+                  sx={{
+                    mb: (theme) => theme.spacing(2),
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+                    gap: 2,
+                    gridAutoRows: 'minmax(100px, auto)',
+                    gridAutoFlow: 'dense',
+                  }}
+                >
+                  {teamProjects
+                    .map((project, index) => (
+                      <Grid item xs={12} sm={6} lg={3} key={index} sx={{ display: 'flex' }}>
+                        <ProjectCard
+                          projectId={project.id}
+                          name={project.name}
+                          ownerName={project.ownerName}
+                          role={project.role}
+                          description={project.description}
+                          createdAt={project.createdAt}
+                          updatedAt={project.updatedAt}
+                          onDeleteProject={handleDeleteProj}
+                        />
+                      </Grid>
+                    ))}
                 </Grid>
-              ))}
-          </Grid>
+              )
+            }
+          </>
         )}
 
         <Copyright sx={{ my: 4 }} />
       </Box>
       <Snackbar
         open={snackbarOpen}
-        autoHideDuration={4000}
-        onClose={() => setSnackbarOpen(false)}
+        autoHideDuration={3000}
+        onClose={handleSnackabrClose}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
         <MuiAlert
@@ -232,7 +283,6 @@ export default function MainGrid() {
           {snackbarMessage}
         </MuiAlert>
       </Snackbar>
-    </Stack>
-
+    </Stack >
   );
 }

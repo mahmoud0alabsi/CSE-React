@@ -13,13 +13,12 @@ import {
     Box,
     Chip,
     CircularProgress,
-    TextField,
     Stack,
     Snackbar,
     Alert
 } from '@mui/material';
-import { useSelector, useDispatch } from 'react-redux';
 import { diffLines } from 'diff';
+import { useSelector, useDispatch } from 'react-redux';
 import DiffViewer from 'react-diff-viewer-continued';
 import InsertDriveFileRoundedIcon from '@mui/icons-material/InsertDriveFileRounded';
 import { addCommitHistory, fetchCommitFilesAsync, setCommitComparison } from '../../state_managment/collaborativeSlice';
@@ -39,6 +38,7 @@ const CommitModal = ({ open, onClose }) => {
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [isSnackbarError, setIsSnackbarError] = useState(false);
     const [isCommitting, setIsCommitting] = useState(false);
+    const [isCommitAvialable, setIsCommitAvailable] = useState(false);
 
     // Compute local files when modal is open and branchId is valid
     useEffect(() => {
@@ -61,6 +61,7 @@ const CommitModal = ({ open, onClose }) => {
 
     // Compare files
     useEffect(() => {
+        setIsCommitAvailable(false);
         if (status !== 'loading' && commitFiles && localFiles.length > 0) {
             const comparison = [];
 
@@ -68,6 +69,7 @@ const CommitModal = ({ open, onClose }) => {
             localFiles.forEach((localFile) => {
                 if (localFile.status === 'new') {
                     comparison.push({ file: localFile, status: 'new' });
+                    setIsCommitAvailable(true);
                 } else {
                     const serverFile = commitFiles.find(
                         (sf) => getFileKey(sf) === getFileKey(localFile)
@@ -75,10 +77,9 @@ const CommitModal = ({ open, onClose }) => {
                     if (serverFile && serverFile.content !== localFile.content) {
                         const diff = diffLines(serverFile.content || '', localFile.content || '');
                         comparison.push({ file: localFile, status: 'updated', diff });
+                        setIsCommitAvailable(true);
                     } else if (serverFile) {
                         comparison.push({ file: localFile, status: 'unchanged' });
-                    } else {
-                        // console.log('File not found on server:', localFile);
                     }
                 }
             });
@@ -87,6 +88,7 @@ const CommitModal = ({ open, onClose }) => {
             commitFiles.forEach((serverFile) => {
                 if (!localFiles.some((lf) => getFileKey(lf) === getFileKey(serverFile))) {
                     comparison.push({ file: serverFile, status: 'deleted' });
+                    setIsCommitAvailable(true);
                 }
             });
 
@@ -95,8 +97,7 @@ const CommitModal = ({ open, onClose }) => {
         }
     }, [commitFiles, localFiles, status, dispatch]);
 
-    // Handle commit
-    const handleCommit = async () => {
+    const handleCommitRequest = async () => {
         try {
             setIsCommitting(true);
 
@@ -304,9 +305,9 @@ const CommitModal = ({ open, onClose }) => {
                     Cancel
                 </Button>
                 <Button
-                    onClick={handleCommit}
+                    onClick={handleCommitRequest}
                     variant="contained"
-                    disabled={status === 'loading' || isPreparing || isCommitting || !commitMessage.trim()}
+                    disabled={status === 'loading' || isPreparing || isCommitting || !commitMessage.trim() || !isCommitAvialable}
                     startIcon={isCommitting && <CircularProgress size={16} color="inherit" />}
                 >
                     {isCommitting ? 'Committing...' : 'Commit'}

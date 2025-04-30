@@ -1,27 +1,31 @@
 import * as React from "react";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Checkbox from "@mui/material/Checkbox";
-import CssBaseline from "@mui/material/CssBaseline";
-import Divider from "@mui/material/Divider";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormLabel from "@mui/material/FormLabel";
-import FormControl from "@mui/material/FormControl";
-import Link from "@mui/material/Link";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
-import Stack from "@mui/material/Stack";
-import MuiCard from "@mui/material/Card";
-import { styled } from "@mui/material/styles";
+import {
+    Box,
+    Button,
+    CssBaseline,
+    Divider,
+    FormLabel,
+    FormControl,
+    Link,
+    TextField,
+    Typography,
+    Stack,
+    Card as MuiCard,
+    Snackbar,
+    Alert,
+    CircularProgress,
+    styled,
+} from "@mui/material";
+import {
+    useNavigate,
+    Link as RouterLink
+} from "react-router-dom";
 import AppTheme from "../../theme/AppTheme";
-import { GoogleIcon, GithubIcon, SitemarkIcon } from "../../components/auth/CustomIcons";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { showLoading } from "../../state_managment/store";
-import { useNavigate } from "react-router-dom";
 import { handleRegister } from "../../api/auth/handlers";
-import CircularProgress from "@mui/material/CircularProgress";
-import { Link as RouterLink } from "react-router-dom";
+import { GoogleIcon, GithubIcon, SitemarkIcon } from "../../components/auth/CustomIcons";
+
 
 const SPRING_SERVER_BASE_URL = process.env.REACT_APP_SPRING_SERVER_BASE_URL;
 
@@ -72,12 +76,15 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
 
 export default function RegisterPage(props) {
     const [loading, setLoading] = useState(false);
+    const [usernameError, setUsernameError] = React.useState(false);
+    const [usernameErrorMessage, setUsernameErrorMessage] = React.useState("");
     const [emailError, setEmailError] = React.useState(false);
     const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
     const [passwordError, setPasswordError] = React.useState(false);
     const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
-    const [nameError, setNameError] = React.useState(false);
-    const [nameErrorMessage, setNameErrorMessage] = React.useState("");
+
+    const [showSnackbar, setShowSnackbar] = React.useState(false);
+    const [snackbarMessage, setSnackbarMessage] = React.useState("");
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -92,6 +99,15 @@ export default function RegisterPage(props) {
         const username = document.getElementById("username");
 
         let isValid = true;
+
+        if (!username.value || username.value.length < 3) {
+            setUsernameError(true);
+            setUsernameErrorMessage("Username is required.");
+            isValid = false;
+        } else {
+            setUsernameError(false);
+            setUsernameErrorMessage("");
+        }
 
         if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
             setEmailError(true);
@@ -109,15 +125,6 @@ export default function RegisterPage(props) {
         } else {
             setPasswordError(false);
             setPasswordErrorMessage("");
-        }
-
-        if (!username.value || username.value.length < 3) {
-            setNameError(true);
-            setNameErrorMessage("Username is required.");
-            isValid = false;
-        } else {
-            setNameError(false);
-            setNameErrorMessage("");
         }
 
         return isValid;
@@ -141,22 +148,45 @@ export default function RegisterPage(props) {
             });
 
             if (response.success) {
-                dispatch(showLoading());
-                navigate("/login", { replace: true });
+                setSnackbarMessage("Registration successful!, redirecting to login...");
+                setShowSnackbar(true);
+                setTimeout(() => {
+                    navigate("/login", { replace: true });
+                }, 3000);
             } else {
-                setEmailError(true);
-                setEmailErrorMessage(response.message || "Registration failed. Try again.");
+                if (response.message.includes("Email")) {
+                    setEmailError(true);
+                    setEmailErrorMessage(response.message || "Registration failed. Try again.");
+                } else {
+                    setUsernameError(true);
+                    setUsernameErrorMessage(response.message || "Registration failed. Try again.");
+                }
             }
         } catch (err) {
-            setEmailError(true);
-            setEmailErrorMessage("Something went wrong. Try again.");
+            console.error(err);
+            setUsernameError(true);
+            setUsernameErrorMessage("Something went wrong. Try again.");
         } finally {
             setLoading(false);
         }
     };
 
+    const handleSnackabrClose = () => {
+        setShowSnackbar(false);
+    }
+
     return (
         <AppTheme {...props}>
+            <Snackbar
+                open={showSnackbar}
+                autoHideDuration={3000}
+                onClose={handleSnackabrClose}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert onClose={handleSnackabrClose} severity="success" sx={{ width: '100%' }}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
             <CssBaseline enableColorScheme />
             <SignUpContainer direction="column" justifyContent="space-between">
                 <Card variant="outlined">
@@ -182,9 +212,9 @@ export default function RegisterPage(props) {
                                 fullWidth
                                 id="username"
                                 placeholder="Jon Snow"
-                                error={nameError}
-                                helperText={nameErrorMessage}
-                                color={nameError ? "error" : "primary"}
+                                error={usernameError}
+                                helperText={usernameErrorMessage}
+                                color={usernameError ? "error" : "primary"}
                             />
                         </FormControl>
                         <FormControl>
@@ -199,7 +229,7 @@ export default function RegisterPage(props) {
                                 variant="outlined"
                                 error={emailError}
                                 helperText={emailErrorMessage}
-                                color={passwordError ? "error" : "primary"}
+                                color={emailError ? "error" : "primary"}
                             />
                         </FormControl>
                         <FormControl

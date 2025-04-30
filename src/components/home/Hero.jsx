@@ -2,6 +2,7 @@ import * as React from "react";
 import { Box, Button, Container, Link, Stack, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
+import { Link as RouterLink } from "react-router-dom";
 
 const StyledBox = styled("div")(({ theme }) => ({
   alignSelf: "center",
@@ -107,6 +108,8 @@ export default function Hero() {
 
           <Box sx={{ pt: 2 }}>
             <Button
+              component={RouterLink}
+              to="/login"
               variant="contained"
               color="primary"
               size="large"

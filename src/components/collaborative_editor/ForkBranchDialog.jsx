@@ -35,7 +35,9 @@ export default function ForkBranchDialog({
     return (
         <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
             <DialogTitle sx={{ pb: 0 }}>
-                <Typography variant="h6">Fork Branch</Typography>
+                <Typography component="div" variant="h6">
+                    Fork Branch
+                </Typography>
             </DialogTitle>
 
             <DialogContent sx={{ pt: 1 }}>

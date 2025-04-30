@@ -1,3 +1,20 @@
+import JavascriptIcon from '@mui/icons-material/Javascript';
+import HtmlIcon from '@mui/icons-material/Html';
+import CssIcon from '@mui/icons-material/Css';
+import DescriptionIcon from '@mui/icons-material/Description';
+import InsertDriveFileRoundedIcon from '@mui/icons-material/InsertDriveFileRounded';
+
+export const extensionIconMap = {
+    js: <JavascriptIcon fontSize="small" />,
+    ts: <JavascriptIcon fontSize="small" />,
+    html: <HtmlIcon fontSize="small" />,
+    css: <CssIcon fontSize="small" />,
+    md: <DescriptionIcon fontSize="small" />,
+    json: <DescriptionIcon fontSize="small" />,
+    py: <DescriptionIcon fontSize="small" />,
+    default: <InsertDriveFileRoundedIcon fontSize="small" />,
+};
+
 const languageByExtensions = {
     js: "JavaScript",
     jsx: "JavaScript (React)",
@@ -71,7 +88,6 @@ const languageByExtensions = {
     fsx: "F# Script",
     tex: "LaTeX",
     bib: "BibTeX",
-    sql: "SQL",
     csv: "CSV",
     tsv: "TSV",
     db: "Database",
@@ -82,7 +98,6 @@ const languageByExtensions = {
     apex: "Apex",
     cls: "Apex Class",
     trigger: "Apex Trigger",
-    feature: "Cucumber",
     story: "Storybook",
     feature: "Gherkin",
     solidity: "Solidity",
@@ -176,3 +191,4 @@ const extensionColorMap = {
 export const getFileColorByExtension = (extension) => {
     return extensionColorMap[extension] || "#9e9e9e";
 }
+

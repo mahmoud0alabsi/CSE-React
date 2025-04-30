@@ -6,8 +6,6 @@ import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-// import { SparkLineChart } from '@mui/x-charts/SparkLineChart';
-// import { areaElementClasses } from '@mui/x-charts/LineChart';
 
 function getDaysInMonth(month, year) {
   const date = new Date(year, month, 0);
@@ -95,24 +93,7 @@ export default function StatCard({
             </Typography>
           </Stack>
           <Box sx={{ width: '100%', height: 50 }}>
-            {/* <SparkLineChart
-              colors={[chartColor]}
-              data={data}
-              area
-              showHighlight
-              showTooltip
-              xAxis={{
-                scaleType: 'band',
-                data: daysInWeek, // Use the correct property 'data' for xAxis
-              }}
-              sx={{
-                [`& .${areaElementClasses.root}`]: {
-                  fill: `url(#area-gradient-${value})`,
-                },
-              }}
-            > */}
             <AreaGradient color={chartColor} id={`area-gradient-${value}`} />
-            {/* </SparkLineChart> */}
           </Box>
         </Stack>
       </CardContent>

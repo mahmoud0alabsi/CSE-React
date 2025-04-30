@@ -1,5 +1,6 @@
 import { configureStore, createSlice } from '@reduxjs/toolkit';
 import collaborativeReducer from './collaborativeSlice';
+import chatSliceReducer from './chatSlice';
 
 const uiSlice = createSlice({
   name: 'ui',
@@ -22,6 +23,7 @@ export const store = configureStore({
   reducer: {
     ui: uiSlice.reducer,
     collaborative: collaborativeReducer,
+    chat: chatSliceReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });

@@ -60,12 +60,11 @@ export default function AppAppBar() {
               variant="h4"
               sx={{
                 fontSize: {
-                  xs: "1.0rem", // ~44px on extra-small
-                  sm: "1.0rem", // ~56px on small+
-                  md: "1.0rem", // ~72px on medium+
+                  xs: "1.0rem",
+                  sm: "1.0rem",
+                  md: "1.0rem",
                 },
                 fontWeight: 800,
-                // color: "primary.main",
               }}
             >
               CodeSpace

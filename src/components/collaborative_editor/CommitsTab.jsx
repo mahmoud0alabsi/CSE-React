@@ -3,32 +3,12 @@ import {
     Box,
     Typography,
     Stack,
-    Avatar,
     Tooltip,
 } from '@mui/material';
-import GitCommitIcon from '@mui/icons-material/Commit'; // git-style icon
-import { useSelector, useDispatch } from 'react-redux';
-
-const mockCommits = [
-    {
-        message: '📝 Updated README with new install instructions',
-        author: 'Alice Johnson',
-        timestamp: '2 hours ago',
-    },
-    {
-        message: '🎨 Refactored UI components for consistency',
-        author: 'Bob Smith',
-        timestamp: '5 hours ago',
-    },
-    {
-        message: '🚀 Deployed latest version to production',
-        author: 'Charlie Doe',
-        timestamp: '1 day ago',
-    },
-];
+import GitCommitIcon from '@mui/icons-material/Commit';
+import { useSelector } from 'react-redux';
 
 export default function CommitsTab() {
-    const dispatch = useDispatch();
     const commitsHistory = useSelector((state) => state.collaborative.commitsHistory);
 
     return (

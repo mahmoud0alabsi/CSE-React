@@ -21,9 +21,7 @@ function TabPanel({ children, value, index }) {
 }
 
 export default function EditorTabs() {
-  const [tabIndex, setTabIndex] = useState(
-    1 // Default to Threads tab for editors, Chat tab for viewers
-  );
+  const [tabIndex, setTabIndex] = useState(1);
   const projectId = useSelector((state) => state.collaborative.projectId);
   const role = useSelector((state) => state.collaborative.role);
   const branchId = useSelector((state) => state.collaborative.selectedBranchId);

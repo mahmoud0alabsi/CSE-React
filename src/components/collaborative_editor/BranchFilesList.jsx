@@ -8,35 +8,19 @@ import {
   Stack,
   Chip,
 } from '@mui/material';
-import JavascriptIcon from '@mui/icons-material/Javascript';
-import HtmlIcon from '@mui/icons-material/Html';
-import CssIcon from '@mui/icons-material/Css';
-import DescriptionIcon from '@mui/icons-material/Description';
-import InsertDriveFileRoundedIcon from '@mui/icons-material/InsertDriveFileRounded';
 import CircularProgress from '@mui/material/CircularProgress';
 import CreateFileDialog from './CreateFileDialog';
-import { addFile, setSelectedFile } from '../../state_managment/collaborativeSlice';
 import { getFileColorByExtension } from './LanguagesData';
 import { sendFileMessage } from '../../services/sessionSyncService';
-import { updateSelectedFileContent } from '../../state_managment/collaborativeSlice';
-
-const extensionIconMap = {
-  js: <JavascriptIcon fontSize="small" />,
-  ts: <JavascriptIcon fontSize="small" />,
-  html: <HtmlIcon fontSize="small" />,
-  css: <CssIcon fontSize="small" />,
-  md: <DescriptionIcon fontSize="small" />,
-  json: <DescriptionIcon fontSize="small" />,
-  py: <DescriptionIcon fontSize="small" />,
-  default: <InsertDriveFileRoundedIcon fontSize="small" />,
-};
+import { addFile, setSelectedFile, updateSelectedFileContent, setEditorLoading, setCode } from '../../state_managment/collaborativeSlice';
+import { extensionIconMap } from './LanguagesData';
 
 const getExtension = (filename) => {
   const parts = filename.split('.');
   return parts.length > 1 ? parts.pop().toLowerCase() : '';
 };
 
-const BranchFilesList = ({ code }) => {
+const BranchFilesList = () => {
   const dispatch = useDispatch();
   const projectId = useSelector((state) => state.collaborative.projectId);
   const branchId = useSelector((state) => state.collaborative.selectedBranchId);
@@ -70,23 +54,24 @@ const BranchFilesList = ({ code }) => {
   const handleFileSelect = (file) => {
     if (!file || file.id === selectedFile?.id) return;
     if (selectedFile) {
-      dispatch(updateSelectedFileContent({ code }));
-      code = '';
+      dispatch(updateSelectedFileContent());
+    } else {
+      dispatch(setCode({ code: file.content }));
     }
-
-    dispatch(setSelectedFile(file));
+    dispatch(setEditorLoading(true));
+    setTimeout(() => {
+      dispatch(setSelectedFile(file));
+    }, 500);
   };
 
   return (
     <div>
-      {/* Display Loading Spinner */}
       {status === 'loading' && (
         <Stack direction="row" justifyContent="center" alignItems="center" sx={{ height: '100%' }}>
           <CircularProgress />
         </Stack>
       )}
 
-      {/* Display Files List */}
       {status !== 'loading' && files.length > 0 && (
         <List dense disablePadding>
           {files.map((file) => {
@@ -144,16 +129,17 @@ const BranchFilesList = ({ code }) => {
         </List>
       )}
 
-      {/* Display No Files Message */}
-      {status !== 'loading' && files.length === 0 && (
+      {status !== 'loading' && files.length === 0 && branchId && (
         <Typography variant="body2" sx={{ textAlign: 'center', mt: 2 }}>
           No files found in this branch.
         </Typography>
       )}
 
-      <CreateFileDialog onCreate={handleCreateNewFile}
-        filesList={files} // Pass the list of
-      />
+      {status !== 'loading' && branchId && (
+        <CreateFileDialog onCreate={handleCreateNewFile}
+          filesList={files}
+        />
+      )}
     </div>
   );
 };

@@ -9,6 +9,7 @@ export default function useCollaborativeCodeSession({
   fileId,
   fileStatus,
   fileContent,
+  role,
   monacoRef,
   editorRef,
   enabled,
@@ -47,6 +48,7 @@ export default function useCollaborativeCodeSession({
     monacoRef,
     provider,
     enabled: isReady,
+    role,
   });
 
   useEffect(() => {

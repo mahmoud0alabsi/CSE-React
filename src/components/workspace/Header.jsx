@@ -72,14 +72,18 @@ export default function Header({ handleCreateProject, loadingCreate }) {
         slotProps={{
           paper: {
             component: 'form',
-            onSubmit: (event) => {
+            onSubmit: async (event) => {
               event.preventDefault();
               const formData = new FormData(event.currentTarget);
               const formJson = Object.fromEntries((formData).entries());
               const name = formJson.name;
               const description = formJson.description;
-              handleCreateProject(name, description);
-              handleClose();
+              const response = await handleCreateProject(name, description);
+              if (response.success) {
+                setProjectName('');
+                setDescription('');
+                handleClose();
+              }
             },
           },
         }}
@@ -158,7 +162,7 @@ export default function Header({ handleCreateProject, loadingCreate }) {
                 },
               }}
             >
-              New Project
+              Create Project
             </Button>
           ) : (
 

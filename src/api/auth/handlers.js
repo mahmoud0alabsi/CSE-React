@@ -27,10 +27,15 @@ const handleLogin = async (
 const handleRegister = async ({ username, email, password }) => {
     try {
         const message = await registerUser({ username, email, password });
-        console.log('Registration successful:', message);
-        // Optionally redirect to login or show success UI
+        return {
+            success: true,
+            message: message || 'Registration successful!',
+        }
     } catch (err) {
-        console.error('Registration failed:', err.response?.data || err.message);
+        return {
+            success: false,
+            message: err.response?.data || err.message,
+        }
     }
 };
 
@@ -38,17 +43,19 @@ const handleRefreshToken = async () => {
     const refreshToken = localStorage.getItem('refreshToken');
 
     if (!refreshToken) {
-        console.warn('No refresh token found');
         return;
     }
 
     try {
         const { tokens } = await refreshAccessToken(refreshToken);
-        console.log('Access token refreshed');
         return tokens.access_token, tokens.refresh_token;
     } catch (err) {
-        console.error('Refresh token failed:', err.response?.data || err.message);
-        // Optionally: logout user or redirect to login
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        return {
+            success: false,
+            message: 'Session expired. Please log in again.',
+        }
     }
 };
 

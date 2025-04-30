@@ -4,7 +4,8 @@ export default function useCursorTracking({
     editorRef,
     monacoRef,
     provider,
-    enabled
+    enabled,
+    role
 }) {
     const decorationIdsRef = useRef([]);
     const widgetsRef = useRef(new Map());
@@ -31,6 +32,7 @@ export default function useCursorTracking({
 
         // Update local cursor position on change
         const handleCursorChange = () => {
+            if (role === 'VIEWER') return;
             const position = editor.getPosition();
             if (position) {
                 provider.awareness.setLocalStateField('user', {
@@ -44,7 +46,9 @@ export default function useCursorTracking({
         };
 
         // Track cursor movements
-        const cursorDisposable = editor.onDidChangeCursorPosition(handleCursorChange);
+        const cursorDisposable = role !== 'VIEWER'
+            ? editor.onDidChangeCursorPosition(handleCursorChange)
+            : { dispose: () => { } };
 
         // Render remote cursors and usernames
         const updateCursors = () => {
@@ -68,7 +72,7 @@ export default function useCursorTracking({
                         stickiness: monaco.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
                         hoverMessage: { value: `${name}'s cursor` },
                         glyphMarginClassName: `cursor-glyph-${clientId}`,
-                        zIndex: 100
+                        zIndex: 1000
                     }
                 });
 

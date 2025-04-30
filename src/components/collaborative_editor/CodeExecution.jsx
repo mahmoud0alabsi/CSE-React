@@ -4,9 +4,10 @@ import { FaPlay } from "react-icons/fa";
 import { handleCodeExecution } from "../../api/code_execution/handlers";
 import { Box, Button, Typography, Paper, CircularProgress } from "@mui/material";
 
-const CodeExecution = ({ code }) => {
+const CodeExecution = () => {
     const selectedBranchId = useSelector((state) => state.collaborative.selectedBranchId);
     const file = useSelector((state) => state.collaborative.selectedFile);
+    const code = useSelector((state) => state.collaborative.code || '');
     const [executionResult, setExecutionResult] = useState(null);
     const [executionTime, setExecutionTime] = useState(0);
     const [success, setSuccess] = useState(null);
@@ -24,7 +25,6 @@ const CodeExecution = ({ code }) => {
         }
         const language = file.language.toLowerCase() || "javascript";
 
-        console.log("Running code:", code, "Language:", language);
         setIsLoading(true);
         setSuccess(null);
         setExecutionResult(""); // Clear previous results
@@ -35,10 +35,7 @@ const CodeExecution = ({ code }) => {
                 language
             });
 
-            console.log("Code execution response:", response);
-
             if (response.success) {
-                console.log("Execution result:", response.success);
                 setExecutionResult(response.stdout);
                 setExecutionTime(response.executionTimeMs);
                 setSuccess(true);
@@ -59,7 +56,6 @@ const CodeExecution = ({ code }) => {
 
     return (
         <Box style={{ backgroundColor: '#070c18' }} sx={{ position: "relative", padding: 2 }}>
-            {/* Header and Run Code Button */}
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 2 }}>
                 <Typography variant="h6">Code Execution Results</Typography>
 
@@ -87,7 +83,6 @@ const CodeExecution = ({ code }) => {
                 </Box>
             </Box>
 
-            {/* Execution Results */}
             <Paper
                 sx={{
                     padding: 2,
@@ -109,7 +104,6 @@ const CodeExecution = ({ code }) => {
                 )}
             </Paper>
 
-            {/* Execution Time */}
             {executionTime >= 0 && (
                 <Box sx={{ marginBottom: 2 }}>
                     <Typography variant="subtitle2">Execution Time: {executionTime} ms</Typography>

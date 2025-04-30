@@ -15,14 +15,14 @@ import {
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { handleLogout } from '../../api/auth/handlers'; // adjust path
+import { handleLogout } from '../../api/auth/handlers';
 import MenuButton from './MenuButton';
-import { useNavigate } from 'react-router-dom'; // Assuming you're using react-router-dom
+import { useNavigate } from 'react-router-dom';
 
 export default function OptionsMenu() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [confirmOpen, setConfirmOpen] = React.useState(false);
-  const navigate = useNavigate(); // Assuming you're using react-router-dom
+  const navigate = useNavigate();
 
   const open = Boolean(anchorEl);
 
@@ -35,14 +35,14 @@ export default function OptionsMenu() {
   };
 
   const handleLogoutClick = () => {
-    handleCloseMenu(); // close menu first
-    setConfirmOpen(true); // open confirmation dialog
+    handleCloseMenu();
+    setConfirmOpen(true);
   };
 
   const handleConfirmLogout = () => {
-    handleLogout(); // your actual logout logic
+    handleLogout();
     setConfirmOpen(false);
-    navigate('/login'); // redirect to login page
+    navigate('/login');
   };
 
   const handleCancelLogout = () => {

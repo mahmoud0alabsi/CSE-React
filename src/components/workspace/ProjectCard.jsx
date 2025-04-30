@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { useTheme } from '@mui/material/styles';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import {
     Card,
     CardContent,
@@ -9,41 +10,50 @@ import {
     Stack,
     Typography,
     Button,
-    CardHeader,
+    Snackbar,
+    Alert,
+    IconButton,
+    Menu,
+    MenuItem,
+    Box,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
 } from '@mui/material';
-import CodeIcon from '@mui/icons-material/Code';
 import PersonIcon from '@mui/icons-material/Person';
-import { useDispatch } from 'react-redux';
-import { showLoading } from '../../state_managment/store';
-import { useState } from 'react';
-
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import IconButton from '@mui/material/IconButton';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import { Box } from '@mui/system';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
+import { showLoading } from '../../state_managment/store';
+import ManageMembersModal from './ManageMembersModal';
 
 export default function ProjectCard({ projectId, name, ownerName, description, role, createdAt, updatedAt, onDeleteProject }) {
-    const theme = useTheme();
     const navigate = useNavigate();
     const dispatch = useDispatch();
-
     const [anchorEl, setAnchorEl] = React.useState(null);
     const menuOpen = Boolean(anchorEl);
-    const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
-    const handleMenuClose = () => setAnchorEl(null);
-
+    const [snackbar, setSnackbar] = useState({
+        open: false,
+        message: '',
+        severity: 'success',
+    });
+    const [modalOpen, setModalOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-
     const roleColor = {
         OWNER: 'primary',
         COLLABORATOR: 'secondary',
         VIEWER: 'default',
     };
+
+    const showSnackbar = (message, severity = 'success') => {
+        setSnackbar({ open: true, message, severity });
+    };
+
+    const handleCloseSnackbar = () => {
+        setSnackbar(prev => ({ ...prev, open: false }));
+    };
+
+    const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
+    const handleMenuClose = () => setAnchorEl(null);
 
     const handleOpenEditor = () => {
         dispatch(showLoading());
@@ -57,6 +67,16 @@ export default function ProjectCard({ projectId, name, ownerName, description, r
                 },
             }
         )
+    };
+
+    const handleOpenMembersModal = () => {
+        setAnchorEl(null);
+        setModalOpen(true);
+    };
+
+    const handleCloseMembersModal = () => {
+        setModalOpen(false);
+        setAnchorEl(null);
     };
 
     const handleDeleteClick = () => {
@@ -97,16 +117,6 @@ export default function ProjectCard({ projectId, name, ownerName, description, r
         >
             <CardContent sx={{ p: 0, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                 <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
-                    {/* <Chip
-                        size="small"
-                        icon={<CodeIcon fontSize="small" />}
-                        variant="outlined"
-                        sx={{
-                            backgroundColor: 'rgba(255,255,255,0.05)',
-                            borderColor: 'rgba(255,255,255,0.1)',
-                            color: 'white',
-                        }}
-                    /> */}
                     <Typography variant="h6" fontWeight={600}>
                         {name}
                     </Typography>
@@ -136,17 +146,18 @@ export default function ProjectCard({ projectId, name, ownerName, description, r
                                     'aria-labelledby': 'project-menu-button',
                                 }}
                             >
+                                <MenuItem onClick={handleOpenMembersModal}>👥 Manage Members</MenuItem>
                                 <MenuItem onClick={handleDeleteClick}>🗑️ Delete Project</MenuItem>
                             </Menu>
                         </Box>
-
                     )}
-
                 </Stack>
 
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    {description.length > 100 ? `${description.slice(0, 100)}...` : description}
-                </Typography>
+                {description && (
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                        {description.length > 100 ? `${description.slice(0, 100)}...` : description}
+                    </Typography>
+                )}
 
                 {role !== 'OWNER' && (
                     <>
@@ -214,6 +225,26 @@ export default function ProjectCard({ projectId, name, ownerName, description, r
                 </DialogActions>
             </Dialog>
 
+            <ManageMembersModal
+                projectId={projectId}
+                open={modalOpen}
+                onClose={handleCloseMembersModal}
+                onShowSnackbar={showSnackbar}
+            ></ManageMembersModal>
+
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={3000}
+                onClose={handleCloseSnackbar}
+            >
+                <Alert
+                    onClose={handleCloseSnackbar}
+                    severity={snackbar.severity}
+                    sx={{ width: '100%' }}
+                >
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
         </Card>
     );
 }

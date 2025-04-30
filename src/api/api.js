@@ -1,4 +1,3 @@
-// src/api/axiosInstance.js
 import axios from 'axios';
 import { handleRefreshToken } from './auth/handlers';
 
@@ -8,7 +7,6 @@ const api = axios.create({
     baseURL: API_BASE_URL,
 });
 
-// Store a refresh promise to prevent duplicate refresh requests
 let isRefreshing = false;
 let failedQueue = [];
 
@@ -29,10 +27,8 @@ api.interceptors.request.use(
     config => {
         const token = localStorage.getItem('accessToken');
 
-        // Define routes that don't need auth
         const publicPaths = ['/auth/login', '/auth/register', '/auth/refresh-token'];
 
-        // Only add Authorization header if endpoint is not public
         const isPublic = publicPaths.some(path => config.url.includes(path));
 
         if (token && !isPublic) {
@@ -86,7 +82,7 @@ api.interceptors.response.use(
                 processQueue(err, null);
                 localStorage.removeItem('accessToken');
                 localStorage.removeItem('refreshToken');
-                window.location.href = '/login'; // Optional: force logout
+                window.location.href = '/login';
                 return Promise.reject(err);
             } finally {
                 isRefreshing = false;

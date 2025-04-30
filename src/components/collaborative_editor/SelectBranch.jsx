@@ -11,13 +11,20 @@ import {
   Box,
   Chip,
 } from '@mui/material';
+import {
+  addBranch,
+  setSelectedBranchId,
+  setSelectedFile,
+  fetchFilesAsync,
+  fetchBranchCommitsHistoryAsync,
+  updateSelectedFileContent,
+  setCode
+} from '../../state_managment/collaborativeSlice';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import CreateBranchDialog from './CreateBranchDialog';
 import { handleCreateBranch } from '../../api/branch/handlers';
 import { sendBranchMessage } from '../../services/sessionSyncService';
-import { addBranch, setSelectedBranchId, setSelectedFile, fetchFilesAsync, fetchBranchCommitsHistoryAsync } from '../../state_managment/collaborativeSlice';
-import { updateSelectedFileContent } from '../../state_managment/collaborativeSlice';
 
 const Avatar = styled('div')(({ theme }) => ({
   width: 28,
@@ -30,7 +37,7 @@ const Avatar = styled('div')(({ theme }) => ({
   justifyContent: 'center',
 }));
 
-function SelectBranch({ code }) {
+function SelectBranch() {
   const dispatch = useDispatch();
   const projectId = useSelector((state) => state.collaborative.projectId);
   const role = useSelector((state) => state.collaborative.role);
@@ -46,15 +53,13 @@ function SelectBranch({ code }) {
       if (selectedBranch.id === branch) return; // No need to switch branches if the same one is selected
 
       if (branch !== null && branch !== '__select__') {
-        dispatch(updateSelectedFileContent({ code })); // Save current file content before switching branches
+        dispatch(updateSelectedFileContent()); // Save current file content before switching branches
       }
-      dispatch(setSelectedFile(null)); // Clear selected file
-
+      dispatch(setSelectedFile(null));
+      dispatch(setCode({ code: '' }));
       dispatch(setSelectedBranchId(selectedBranch.id));
       dispatch(fetchFilesAsync({ projectId, branchId: selectedBranch.id })); // Lazy load files for the selected branch
       dispatch(fetchBranchCommitsHistoryAsync({ projectId, branchId: selectedBranch.id })); // Fetch commits history for the selected branch
-
-      code = '';
     }
   };
 

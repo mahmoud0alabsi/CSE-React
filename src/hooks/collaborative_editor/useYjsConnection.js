@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import * as Y from 'yjs';
-import { fetchFileContent } from '../../api/FileApi';
 import { WebsocketProvider } from 'y-websocket';
 
 const YJS_SOCKET = process.env.REACT_APP_YJS_SERVER_URL;
@@ -68,12 +67,6 @@ export default function useYjsConnection({
                         newYText.insert(0, fileContent);
                         newMeta.set('initialized', true);
                     });
-                    // const content = await fetchFileContent(projectId, branchId, fileId);
-                    // newYdoc.transact(() => {
-                    //     newYText.delete(0, newYText.length);
-                    //     newYText.insert(0, content);
-                    //     newMeta.set('initialized', true);
-                    // });
                 } catch (err) {
                     console.error(`[Yjs Client] Failed to fetch content: ${err.message}`);
                 }
@@ -102,12 +95,6 @@ export default function useYjsConnection({
 
         // Log when connection is closed with safeguards
         newProvider.on('connection-close', (event) => {
-            // console.log(`[Yjs Client] Connection closed:`, {
-            //     code: event?.code ?? 'Unknown',
-            //     reason: event?.reason ?? 'No reason provided',
-            //     wasClean: event?.wasClean ?? false
-            // });
-            // Clear cursor on disconnect
             newProvider.awareness.setLocalStateField('user', null);
         });
 
@@ -123,7 +110,7 @@ export default function useYjsConnection({
             newProvider.destroy();
             newYdoc.destroy();
         };
-    }, [docName, enabled, fileStatus, projectId, branchId, fileId]);
+    }, [docName, enabled, fileStatus, projectId, branchId, fileId, fileContent]);
 
     return { ydoc, provider, yText, meta };
 }

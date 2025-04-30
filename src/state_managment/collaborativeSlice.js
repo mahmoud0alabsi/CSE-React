@@ -98,6 +98,10 @@ const collaborativeSlice = createSlice({
 
     commitsHistory: [],
 
+    code: '',
+
+    editorLoading: false,
+
     status: 'idle',
     error: null,
   },
@@ -136,18 +140,13 @@ const collaborativeSlice = createSlice({
 
     updateSelectedFileContent: (state, action) => {
       const branchId = state.selectedBranchId;
-      const { code } = action.payload;
       const selectedFile = state.selectedFile;
-      if (selectedFile) {
-        const updatedFile = {
-          ...selectedFile,
-          content: code,
-        };
-        state.selectedFile = updatedFile;
-        // Update the file in the filesByBranch as well
+      const selectedFileId = selectedFile?.id;
+      const code = state.code;
+      if (selectedFile && selectedFileId) {
         if (state.filesByBranch[branchId]) {
           state.filesByBranch[branchId].forEach((file, index) => {
-            if (file.id === selectedFile.id) {
+            if (file.id === selectedFileId) {
               file.content = code;
             }
           });
@@ -168,6 +167,15 @@ const collaborativeSlice = createSlice({
         state.commitsHistory.push(commit);
       } catch (error) {
       }
+    },
+
+    setCode: (state, action) => {
+      const { code } = action.payload;
+      state.code = code;
+    },
+
+    setEditorLoading: (state, action) => {
+      state.editorLoading = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -247,6 +255,11 @@ export const {
   setCommitComparison,
 
   addCommitHistory,
+
+  setCode,
+  removeCode,
+
+  setEditorLoading,
 } = collaborativeSlice.actions;
 
 export default collaborativeSlice.reducer;

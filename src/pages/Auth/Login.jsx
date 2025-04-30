@@ -1,9 +1,7 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Checkbox from "@mui/material/Checkbox";
 import CssBaseline from "@mui/material/CssBaseline";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import Divider from "@mui/material/Divider";
 import FormLabel from "@mui/material/FormLabel";
 import FormControl from "@mui/material/FormControl";
@@ -73,8 +71,8 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
 
 export default function LoginPage(props) {
     const [loading, setLoading] = useState(false);
-    const [emailError, setEmailError] = React.useState(false);
-    const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
+    const [usernameError, setUsernameError] = React.useState(false);
+    const [usernameErrorMessage, setUsernameErrorMessage] = React.useState("");
     const [passwordError, setPasswordError] = React.useState(false);
     const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
     const [open, setOpen] = React.useState(false);
@@ -98,10 +96,10 @@ export default function LoginPage(props) {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        const isValid = validateInputs(); // <-- Call it here first
+        const isValid = validateInputs();
         if (!isValid) return;
 
-        setLoading(true); // only set after validation
+        setLoading(true);
 
         try {
             const data = new FormData(event.currentTarget);
@@ -115,12 +113,12 @@ export default function LoginPage(props) {
                 dispatch(showLoading());
                 navigate("/workspace", { replace: true });
             } else {
-                setEmailError(true);
-                setEmailErrorMessage(response.message || "Invalid credentials.");
+                setUsernameError(true);
+                setUsernameErrorMessage(response.message || "Invalid credentials.");
             }
         } catch (err) {
-            setEmailError(true);
-            setEmailErrorMessage("Something went wrong. Try again.");
+            setUsernameError(true);
+            setUsernameErrorMessage("Something went wrong. Try again.");
         } finally {
             setLoading(false);
         }
@@ -133,12 +131,12 @@ export default function LoginPage(props) {
         let isValid = true;
 
         if (!username.value || username.value.length < 3) {
-            setEmailError(true);
-            setEmailErrorMessage("Username must be at least 3 characters long.");
+            setUsernameError(true);
+            setUsernameErrorMessage("Username must be at least 3 characters long.");
             isValid = false;
         } else {
-            setEmailError(false);
-            setEmailErrorMessage("");
+            setUsernameError(false);
+            setUsernameErrorMessage("");
         }
 
         if (!password.value || password.value.length < 6) {
@@ -184,18 +182,18 @@ export default function LoginPage(props) {
                         <FormControl>
                             <FormLabel htmlFor="username">Username</FormLabel>
                             <TextField
-                                error={emailError}
-                                helperText={emailErrorMessage}
+                                required
+                                error={usernameError}
+                                helperText={usernameErrorMessage}
                                 id="username"
                                 type="text"
                                 name="username"
                                 placeholder="Jon Snow"
                                 autoComplete="username"
-                                required
                                 autoFocus
                                 fullWidth
                                 variant="outlined"
-                                color={emailError ? "error" : "primary"}
+                                color={usernameError ? "error" : "primary"}
                             />
                         </FormControl>
                         <FormControl

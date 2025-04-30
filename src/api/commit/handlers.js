@@ -46,6 +46,9 @@ export const handleGetLatestCommitFilesByBranch = async (projectId, branchId, in
     }
 
     let files = await getLatestCommitFilesByBranch(projectId, branchId, includeContent);
+    if (!files || !files.data || files.data.length === 0) {
+        return { success: true, data: [] };
+    }
     files = files.data.map(file => {
         return {
             ...file,

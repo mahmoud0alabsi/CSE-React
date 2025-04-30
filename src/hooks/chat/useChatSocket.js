@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
+import { useDispatch, useSelector } from "react-redux";
+import { addMessage } from "../../state_managment/chatSlice";
 
 const SPRING_SERVER_BASE_URL = process.env.REACT_APP_SPRING_SERVER_BASE_URL;
 
 const useChatSocket = (projectId) => {
     const [stompClient, setStompClient] = useState(null);
-    const [messages, setMessages] = useState([]);
     const [connected, setConnected] = useState(false);
+    const dispatch = useDispatch();
+    const messages = useSelector((state) => state.chat.messagesByProject[projectId] || []);
 
     useEffect(() => {
         const socket = new SockJS(`${SPRING_SERVER_BASE_URL}/ws`, null, {
@@ -18,11 +21,11 @@ const useChatSocket = (projectId) => {
 
         const client = new Client({
             webSocketFactory: () => socket,
-            // debug: (str) => console.log('[WS] ' + str),
             onConnect: () => {
                 setConnected(true);
                 client.subscribe(`/topic/chat/${projectId}`, (message) => {
-                    setMessages((prevMessages) => [...prevMessages, JSON.parse(message.body)]);
+                    const newMessage = JSON.parse(message.body);
+                    dispatch(addMessage({ projectId, message: newMessage }));
                 },
                     {
                         headers: {
@@ -32,7 +35,6 @@ const useChatSocket = (projectId) => {
             },
             onDisconnect: () => {
                 setConnected(false);
-                // console.log("Disconnected from WebSocket");
             },
         });
 
@@ -42,10 +44,9 @@ const useChatSocket = (projectId) => {
         return () => {
             if (client) {
                 client.deactivate();
-                // console.log("[WS] WebSocket deactivated");
             }
         };
-    }, [projectId]);
+    }, [projectId, dispatch]);
 
     const sendMessage = (message) => {
         if (stompClient && connected) {

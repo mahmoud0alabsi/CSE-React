@@ -3,7 +3,6 @@ import {
     Box,
     List,
     ListItem,
-    ListItemText,
     TextField,
     Button,
     Stack,
@@ -14,6 +13,7 @@ import useThreadSocket from '../../hooks/chat/useThreadSocket';
 export default function ThreadTab({ projectId, branchId, fileId, role }) {
     const [chatInput, setChatInput] = useState("");
     const { connected, messages, sendMessage } = useThreadSocket(projectId, branchId, fileId);
+    const username = localStorage.getItem("username") || "Anonymous";
     const scrollRef = useRef(null);
 
     const handleSend = () => {
@@ -39,7 +39,6 @@ export default function ThreadTab({ projectId, branchId, fileId, role }) {
 
     return (
         <Box sx={{ display: "flex", flexDirection: "column", flex: 1, height: "100%", minHeight: 0, bgcolor: "#1e1e1e", color: "#f1f1f1" }}>
-            {/* Header */}
             <Box
                 sx={{
                     display: "flex",
@@ -55,27 +54,70 @@ export default function ThreadTab({ projectId, branchId, fileId, role }) {
                 </Typography>
             </Box>
 
-            {/* Scrollable messages area */}
             <Box sx={{ flex: 1, overflowY: "auto", p: 1, minHeight: 0 }} ref={scrollRef}>
                 <List dense>
-                    {messages.map((msg, i) => (
-                        console.log("Rendering message:", msg),
-                        <ListItem key={i} disableGutters>
-                            <ListItemText
-                                primary={<Typography variant="body2" sx={{ color: "#fff" }}>{msg.content}</Typography>}
-                                secondary={<Typography variant="caption" sx={{ color: "#888" }}>{msg.sender}</Typography>}
-                            />
-                            <Typography variant="caption" sx={{ color: "#888", ml: 1 }}>{new Date(msg.timestamp).toLocaleString(undefined, {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                hour12: true
-                            })}</Typography>
-                        </ListItem>
-                    ))}
+                    {messages.map((msg, i) => {
+                        const isCurrentUser = msg.sender === username;
+                        return (
+                            <ListItem
+                                key={i}
+                                disableGutters
+                                sx={{
+                                    justifyContent: isCurrentUser ? 'flex-end' : 'flex-start',
+                                }}
+                            >
+                                <Box sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: isCurrentUser ? 'flex-end' : 'flex-start',
+                                    maxWidth: '80%',
+                                    mb: 1
+                                }}>
+                                    {/* Username */}
+                                    <Typography
+                                        variant="caption"
+                                        sx={{
+                                            color: "#888",
+                                            fontWeight: 'bold',
+                                            mb: 0.5
+                                        }}
+                                    >
+                                        {isCurrentUser ? 'You' : msg.sender}
+                                    </Typography>
+
+                                    {/* Message Bubble */}
+                                    <Box sx={{
+                                        bgcolor: isCurrentUser ? '#3f51b5' : '#2a2a2a',
+                                        p: 1.5,
+                                        borderRadius: 2,
+                                        color: '#fff',
+                                        wordBreak: 'break-word'
+                                    }}>
+                                        <Typography variant="body2">{msg.content}</Typography>
+                                    </Box>
+
+                                    {/* Timestamp */}
+                                    <Typography
+                                        variant="caption"
+                                        sx={{
+                                            color: "#888",
+                                            mt: 0.5,
+                                            fontSize: '0.7rem'
+                                        }}
+                                    >
+                                        {new Date(msg.timestamp).toLocaleString(undefined, {
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            hour12: true
+                                        })}
+                                    </Typography>
+                                </Box>
+                            </ListItem>
+                        );
+                    })}
                 </List>
             </Box>
 
-            {/* Input box pinned to bottom */}
             <Stack direction="row" spacing={1} sx={{ p: 1, borderTop: "1px solid #333" }}>
                 <TextField
                     fullWidth
@@ -101,7 +143,7 @@ export default function ThreadTab({ projectId, branchId, fileId, role }) {
                     size="small"
                     onClick={handleSend}
                     sx={{ bgcolor: "#3f51b5", textTransform: "none" }}
-                    disabled={!connected} // Disable if not connected
+                    disabled={!connected}
                 >
                     Send
                 </Button>
