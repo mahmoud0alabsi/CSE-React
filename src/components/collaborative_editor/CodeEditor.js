@@ -5,7 +5,7 @@ import { LinearProgress, Box, Stack } from '@mui/material';
 import useCollaborativeCodeSession from '../../hooks/collaborative_editor/useCollaborativeCodeSession';
 import { setCode, setEditorLoading } from '../../state_managment/collaborativeSlice';
 
-const CodeEditor = ({ setNewCode }) => {
+const CodeEditor = () => {
     const {
         projectId,
         role,
@@ -70,7 +70,7 @@ const CodeEditor = ({ setNewCode }) => {
             setCurrentCode(content);
             setEditorReady(true);
             dispatch(setEditorLoading(false));
-        }, 100);
+        }, 500);
 
         return () => clearTimeout(timer);
     }, [file, dispatch]);

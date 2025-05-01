@@ -45,7 +45,10 @@ export default function useYjsConnection({
             clientId: localStorage.getItem('username') || `user-${id}`,
             name: localStorage.getItem('username') || `User ${id}`,
             color: '#' + Math.floor(Math.random() * 16777215).toString(16),
-            cursor: null // Initialize cursor as null
+            cursor: {
+                lineNumber: 1,
+                column: 1
+            }
         });
 
         // Handle sync and initial content

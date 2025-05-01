@@ -174,5 +174,5 @@ export default function useCursorTracking({
                 document.head.removeChild(styleRef.current);
             }
         };
-    }, [editorRef, monacoRef, provider, enabled, usernameColors]);
+    }, [editorRef, monacoRef, provider, enabled, usernameColors, role]);
 }

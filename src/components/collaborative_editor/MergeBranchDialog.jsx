@@ -19,7 +19,11 @@ import {
     CircularProgress,
     Snackbar,
     Alert,
+    Collapse,
+    IconButton,
+    Paper
 } from '@mui/material';
+import { ExpandMore, ExpandLess } from '@mui/icons-material';
 import { useSelector, useDispatch } from 'react-redux';
 import { handleMergeBranch } from '../../api/branch/handlers';
 import { addCommitHistory } from '../../state_managment/collaborativeSlice';
@@ -34,7 +38,7 @@ export default function MergeBranchDialog({ open, onClose }) {
     const [error, setError] = useState(null);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
-
+    const [openConflicts, setOpenConflicts] = useState(false);
 
     const handleMerge = async () => {
         setIsLoading(true);
@@ -75,6 +79,8 @@ export default function MergeBranchDialog({ open, onClose }) {
         setError(null);
         onClose();
     };
+
+    const toggleConflicts = () => setOpenConflicts(prev => !prev);
 
     return (
         <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
@@ -140,54 +146,74 @@ export default function MergeBranchDialog({ open, onClose }) {
                 {mergeResult && (
                     <Box sx={{ mt: 2 }}>
                         {mergeResult.success ? (
-                            <Typography color="success.main">
-                                Merge successful! New commit created: {mergeResult.mergedCommit.message}
-                            </Typography>
+                            <Paper sx={{ padding: 2, backgroundColor: 'success.light' }}>
+                                <Typography color="success.main" variant="h6">
+                                    Merge successful!
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    New commit created: {mergeResult.mergedCommit.message}
+                                </Typography>
+                            </Paper>
                         ) : (
                             <>
-                                <Typography color="error" gutterBottom>
-                                    Merge failed due to conflicts:
-                                </Typography>
-                                <List dense>
-                                    {mergeResult.conflicts.map((conflict, index) => (
-                                        <React.Fragment key={index}>
-                                            <ListItem>
-                                                <ListItemText
-                                                    primary={
-                                                        <Typography variant="subtitle2">
-                                                            File: {conflict.fileName} (Path: {conflict.filePath})
-                                                        </Typography>
-                                                    }
-                                                    secondary={
-                                                        <Box sx={{ mt: 1 }}>
-                                                            {conflict.lineConflicts.map((lineConflict) => (
-                                                                <Box key={lineConflict.lineNumber} sx={{ mb: 2 }}>
-                                                                    <Typography variant="body2" fontWeight="bold">
-                                                                        Line {lineConflict.lineNumber}:
-                                                                    </Typography>
-                                                                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                                                        Base: {lineConflict.baseContent || '<empty>'}
-                                                                    </Typography>
-                                                                    <Typography variant="body2" sx={{ color: 'warning.main' }}>
-                                                                        Source: {lineConflict.sourceContent || '<empty>'}
-                                                                    </Typography>
-                                                                    <Typography variant="body2" sx={{ color: 'error.main' }}>
-                                                                        Target: {lineConflict.targetContent || '<empty>'}
-                                                                    </Typography>
+                                <Paper sx={{ padding: 2, backgroundColor: 'error.light' }}>
+                                    <Typography color="white" variant="h6" gutterBottom>
+                                        ⚠️ Merge failed due to conflicts:
+                                    </Typography>
+                                    <IconButton onClick={toggleConflicts}>
+                                        {openConflicts ? <ExpandLess /> : <ExpandMore />}
+                                    </IconButton>
+                                </Paper>
+
+                                <Collapse in={openConflicts}>
+                                    <Box sx={{ backgroundColor: '#35363b', padding: 1, borderRadius: 1 }}>
+                                        <List dense sx={{ mt: 1 }}>
+                                            {mergeResult.conflicts.map((conflict, index) => (
+                                                <React.Fragment key={index}>
+                                                    <ListItem sx={{ borderBottom: 1, borderColor: 'divider', paddingY: 1 }}>
+                                                        <ListItemText
+                                                            primary={
+                                                                <Typography variant="subtitle1" fontWeight="bold" color="white">
+                                                                    <span style={{ color: 'white' }}>File:</span> {conflict.fileName}
+                                                                </Typography>
+                                                            }
+                                                            secondary={
+                                                                <Box sx={{ mt: 1 }}>
+                                                                    {conflict.lineConflicts.map((lineConflict) => (
+                                                                        <Box key={lineConflict.lineNumber} sx={{ mb: 2, borderRadius: 1, backgroundColor: 'background.paper', padding: 1 }}>
+                                                                            <Typography variant="body2" fontWeight="bold" sx={{ color: 'text.primary' }}>
+                                                                                Line {lineConflict.lineNumber}:
+                                                                            </Typography>
+                                                                            <Box sx={{ mt: 1 }}>
+                                                                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                                                                                    <strong>Base:</strong> {lineConflict.baseContent || '<empty>'}
+                                                                                </Typography>
+                                                                                <Typography variant="body2" sx={{ color: 'warning.main' }}>
+                                                                                    <strong>Source:</strong> {lineConflict.sourceContent || '<empty>'}
+                                                                                </Typography>
+                                                                                <Typography variant="body2" sx={{ color: 'error.main' }}>
+                                                                                    <strong>Target:</strong> {lineConflict.targetContent || '<empty>'}
+                                                                                </Typography>
+                                                                            </Box>
+                                                                        </Box>
+                                                                    ))}
                                                                 </Box>
-                                                            ))}
-                                                        </Box>
-                                                    }
-                                                />
-                                            </ListItem>
-                                            {index < mergeResult.conflicts.length - 1 && <Divider />}
-                                        </React.Fragment>
-                                    ))}
-                                </List>
+                                                            }
+                                                        />
+                                                    </ListItem>
+                                                    {index < mergeResult.conflicts.length - 1 && <Divider
+                                                        color='#fff'
+                                                        style={{ margin: '4px 0', color: 'white', height: 1 }} />}
+                                                </React.Fragment>
+                                            ))}
+                                        </List>
+                                    </Box>
+                                </Collapse>
                             </>
                         )}
                     </Box>
                 )}
+
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose} disabled={isLoading}>
@@ -219,7 +245,6 @@ export default function MergeBranchDialog({ open, onClose }) {
                     {snackbarMessage}
                 </Alert>
             </Snackbar>
-
         </Dialog>
     );
 }
