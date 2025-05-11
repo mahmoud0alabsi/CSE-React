@@ -6,7 +6,7 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm install --legacy-peer-deps
 
-COPY .env.production .env
+COPY .env .env
 
 COPY . .
 RUN npm run build

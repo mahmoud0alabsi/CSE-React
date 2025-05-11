@@ -4,7 +4,6 @@ npm-debug.log
 .gitignore
 Dockerfile
 *.md
-.env
 dist
 build
 logs
