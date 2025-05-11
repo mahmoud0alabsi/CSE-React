@@ -38,24 +38,28 @@ jobs:
         echo "${{ secrets.BASTION_PRIVATE_KEY }}" > ~/.ssh/bastion.pem
         chmod 600 ~/.ssh/bastion.pem
         
-        # Configure SSH to be more verbose and handle known hosts
-        echo "StrictHostKeyChecking no" >> ~/.ssh/config
-        echo "UserKnownHostsFile /dev/null" >> ~/.ssh/config
-        
-        # Configure the bastion host
-        echo "Host bastion" >> ~/.ssh/config
-        echo "  HostName ${{ secrets.BASTION_HOST }}" >> ~/.ssh/config
-        echo "  User ${{ secrets.BASTION_USER }}" >> ~/.ssh/config
-        echo "  IdentityFile ~/.ssh/bastion.pem" >> ~/.ssh/config
-        echo "  Port 22" >> ~/.ssh/config
-        
-        # Configure the EC2 instance
-        echo "Host ec2" >> ~/.ssh/config
-        echo "  HostName ${{ secrets.EC2_PRIVATE_IP }}" >> ~/.ssh/config
-        echo "  User ${{ secrets.EC2_USER }}" >> ~/.ssh/config
-        echo "  IdentityFile ~/.ssh/bastion.pem" >> ~/.ssh/config
-        echo "  ProxyCommand ssh -W %h:%p bastion" >> ~/.ssh/config
-        echo "  Port 22" >> ~/.ssh/config
+        # Create SSH config file
+        cat > ~/.ssh/config << 'EOF'
+        StrictHostKeyChecking no
+        UserKnownHostsFile /dev/null
+
+        Host bastion
+          HostName ${{ secrets.BASTION_HOST }}
+          User ${{ secrets.BASTION_USER }}
+          IdentityFile ~/.ssh/bastion.pem
+          Port 22
+
+        Host ec2
+          HostName ${{ secrets.EC2_PRIVATE_IP }}
+          User ${{ secrets.EC2_USER }}
+          IdentityFile ~/.ssh/bastion.pem
+          ProxyCommand ssh -W %h:%p bastion
+          Port 22
+        EOF
+
+        # Debug: Show the SSH config file contents
+        echo "SSH Config file contents:"
+        cat ~/.ssh/config
 
     - name: Test Bastion Connection
       run: |
