@@ -35,7 +35,7 @@ jobs:
     - name: Prepare SSH Bastion tunnel
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.BASTION_PRIVATE_KEY }}" | base64 -d > ~/.ssh/bastion.pem
+        echo "${{ secrets.BASTION_PRIVATE_KEY }}" > ~/.ssh/bastion.pem
         chmod 600 ~/.ssh/bastion.pem
     
         echo "Host ec2" >> ~/.ssh/config
