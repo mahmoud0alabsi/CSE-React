@@ -37,41 +37,26 @@ jobs:
         mkdir -p ~/.ssh
         echo "${{ secrets.BASTION_PRIVATE_KEY }}" > ~/.ssh/bastion.pem
         chmod 600 ~/.ssh/bastion.pem
-        
-        # Create SSH config file
-        cat > ~/.ssh/config << 'EOF'
-        StrictHostKeyChecking no
-        UserKnownHostsFile /dev/null
-
-        Host bastion
-          HostName ${{ secrets.BASTION_HOST }}
-          User ${{ secrets.BASTION_USER }}
-          IdentityFile ~/.ssh/bastion.pem
-          Port 22
-
-        Host ec2
-          HostName ${{ secrets.EC2_PRIVATE_IP }}
-          User ${{ secrets.EC2_USER }}
-          IdentityFile ~/.ssh/bastion.pem
-          ProxyCommand ssh -W %h:%p bastion
-          Port 22
-        EOF
-
-        # Debug: Show the SSH config file contents
-        echo "SSH Config file contents:"
-        cat ~/.ssh/config
-
-    - name: Test Bastion Connection
-      run: |
-        ssh -v bastion 'echo "Bastion connection successful"'
+    
+        echo "Host ec2" >> ~/.ssh/config
+        echo "  HostName ${{ secrets.EC2_PRIVATE_IP }}" >> ~/.ssh/config
+        echo "  User ${{ secrets.EC2_USER }}" >> ~/.ssh/config
+        echo "  IdentityFile ~/.ssh/bastion.pem" >> ~/.ssh/config
+        echo "  ProxyCommand ssh -i ~/.ssh/bastion.pem -o StrictHostKeyChecking=no -W %h:%p ${{ secrets.BASTION_USER }}@${{ secrets.BASTION_HOST }}" >> ~/.ssh/config
 
     - name: Deploy to EC2 via Bastion
       run: |
-        ssh -v ec2 -T << 'EOSSH'
+        ssh -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -i ~/.ssh/bastion.pem \
+            -o ProxyCommand="ssh -i ~/.ssh/bastion.pem -o StrictHostKeyChecking=no -W %h:%p ${{ secrets.BASTION_USER }}@${{ secrets.BASTION_HOST }}" \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_PRIVATE_IP }} -T << 'EOSSH'
+    
           set -e
-          
+    
           # Pull and run the Docker container
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}
           docker stop frontend || true && docker rm frontend || true
           docker run -d --name frontend -p 80:80 ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}
+    
         EOSSH
