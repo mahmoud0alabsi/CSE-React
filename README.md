@@ -10,19 +10,11 @@
 
 CodeSpace Editor Frontend is a React.js application that provides a collaborative code editing interface for the CodeSpace Editor platform. It integrates with a [Spring Boot Backend](https://github.com/mahmoud0alabsi/CSE-SpringBoot) for project, branch, and commit management, and a [Yjs Server](https://github.com/mahmoud0alabsi/CSE-yjs-server) for real-time document collaboration using Monaco Editor.
 
-## Project Showcase
-
 ###
 
-<div align="center">
-  <video width="600" controls>
-    <source src="https://github.com/mahmoud0alabsi/mahmoud0alabsi/blob/main/assets/videos/cse_tour.mp4?raw=true" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
-</div>
+🎥 [Watch the CodeSpace Editor Tour](https://youtu.be/xTDq5a8hy6A)
 
 ###
-
 
 ## Features
 
