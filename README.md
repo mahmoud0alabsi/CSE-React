@@ -1,6 +1,28 @@
-# CodeSpace Editor Frontend
+# CodeSpace Editor - React
 
-CodeSpace Editor Frontend is a React.js application that provides a collaborative code editing interface for the CodeSpace Editor platform. It integrates with a [Spring Boot Backend](https://github.com/mahmoud0alabsi/code_space_editor) for project, branch, and commit management, and a [Yjs Server](https://github.com/mahmoud0alabsi/code_space_editor_yjs_server) for real-time document collaboration using Monaco Editor.
+###
+
+<div align="center">
+<img width="300px" src="https://github.com/mahmoud0alabsi/mahmoud0alabsi/blob/main/assets/logo/codespace.png?raw=true"/>
+</div>
+
+###
+
+CodeSpace Editor Frontend is a React.js application that provides a collaborative code editing interface for the CodeSpace Editor platform. It integrates with a [Spring Boot Backend](https://github.com/mahmoud0alabsi/CSE-SpringBoot) for project, branch, and commit management, and a [Yjs Server](https://github.com/mahmoud0alabsi/CSE-yjs-server) for real-time document collaboration using Monaco Editor.
+
+## Project Showcase
+
+###
+
+<div align="center">
+  <video width="600" controls>
+    <source src="https://github.com/mahmoud0alabsi/mahmoud0alabsi/blob/main/assets/videos/cse_tour.mp4?raw=true" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+</div>
+
+###
+
 
 ## Features
 
@@ -31,16 +53,16 @@ Yjs powers real-time collaboration using **Conflict-free Replicated Data Types (
 
 - Node.js 18+
 - npm 9+
-- [CodeSpace Editor Backend](https://github.com/mahmoud0alabsi/code_space_editor) running
-- [CodeSpace Editor Yjs Server](https://github.com/mahmoud0alabsi/code_space_editor_yjs_server) running
+- [CodeSpace Editor Backend](https://github.com/mahmoud0alabsi/CSE-SpringBoot) running
+- [CodeSpace Editor Yjs Server](https://github.com/mahmoud0alabsi/CSE-yjs-server) running
 
 ## Setup Instructions
 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/mahmoud0alabsi/code_space_editor_react.git
-cd codespace-editor-frontend
+git clone https://github.com/mahmoud0alabsi/CSE-React.git
+cd CSE-React
 ```
 
 ### 2. Install Dependencies
@@ -65,8 +87,8 @@ REACT_APP_YJS_SERVER_URL=ws://localhost:1234
 
 ### 4. Run the Backend and Yjs Server
 
-- **Backend**: Follow the [backend README](https://github.com/mahmoud0alabsi/code_space_editor) to start the Spring Boot server.
-- **Yjs Server**: Follow the [Yjs server README](https://github.com/mahmoud0alabsi/code_space_editor_yjs_server) to start the WebSocket server (`node server.js`).
+- **Backend**: Follow the [backend README](https://github.com/mahmoud0alabsi/CSE-SpringBoot) to start the Spring Boot server.
+- **Yjs Server**: Follow the [Yjs server README](https://github.com/mahmoud0alabsi/CSE-yjs-server) to start the WebSocket server (`node server.js`).
 
 ### 5. Run the Application
 
